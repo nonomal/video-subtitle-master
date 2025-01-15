@@ -14,6 +14,10 @@ export const isDarwin = () => os.platform() === "darwin";
 
 export const isWin32 = () => os.platform() === "win32";
 
+export const isAppleSilicon = () => {
+  return os.platform() === 'darwin' && os.arch() === 'arm64';
+};
+
 export const getExtraResourcesPath = () => {
   const isProd = process.env.NODE_ENV === "production";
   return isProd
@@ -40,7 +44,7 @@ export function runCommand(command, args, onProcess = undefined) {
     child.on("close", (code) => {
       if (code !== 0) {
         reject(
-          new Error(`${command} ${args.join(" ")} 进程退出，退出码 ${code}`),
+          new Error(`${command} ${args.join(" ")} process error ${code}`),
         );
       } else {
         resolve(true);
@@ -70,4 +74,40 @@ function throttle(func, limit) {
       );
     }
   };
+}
+
+// 删除 processFile 函数
+
+export const defaultUserConfig = {
+    sourceLanguage: 'en',
+    targetLanguage: 'zh',
+    customTargetSrtFileName: '${fileName}.${targetLanguage}',
+    customSourceSrtFileName: '${fileName}.${sourceLanguage}',
+    model: 'tiny',
+    translateProvider: 'baidu',
+    translateContent: 'onlyTranslate',
+    maxConcurrentTasks: 1,
+    sourceSrtSaveOption: 'noSave',
+    targetSrtSaveOption: 'fileNameWithLang',
+}
+
+export function getSrtFileName(
+  option: string,
+  fileName: string,
+  language: string,
+  customFileName: string,
+  templateData: { [key: string]: string }
+): string {
+  switch (option) {
+    case 'noSave':
+      return `${fileName}_temp`;
+    case 'fileName':
+      return fileName;
+    case 'fileNameWithLang':
+      return `${fileName}.${language}`;
+    case 'custom':
+      return renderTemplate(customFileName, templateData);
+    default:
+      return `${fileName}_temp`;
+  }
 }

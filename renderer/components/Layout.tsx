@@ -1,24 +1,27 @@
-import React, { useEffect } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import React, { useEffect } from 'react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { BotIcon, FileVideo2, Github, MonitorPlay } from "lucide-react";
-import { openUrl } from "lib/utils";
-import { useRouter } from "next/router";
-import { toast } from "sonner";
-import { Toaster } from "@/components/ui/sonner";
+} from '@/components/ui/tooltip';
+import { BotIcon, FileVideo2, Github, MonitorPlay, Languages, Settings } from 'lucide-react';
+import { openUrl } from 'lib/utils';
+import { useRouter } from 'next/router';
+import { toast } from 'sonner';
+import { Toaster } from '@/components/ui/sonner';
+import { useTranslation } from 'next-i18next';
+
 
 const Layout = ({ children }) => {
+  const { t, i18n: { language: locale } } = useTranslation('common');
   const { asPath } = useRouter();
   useEffect(() => {
-    window?.ipc?.on("message", (res: string) => {
-      toast("消息通知", {
-        description: res,
+    window?.ipc?.on('message', (res: string) => {
+      toast(t('notification'), {
+        description: t(res),
       });
       console.log(res);
     });
@@ -38,12 +41,12 @@ const Layout = ({ children }) => {
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/home">
+                <Link href={`/${locale}/home`}>
                   <Button
                     variant="ghost"
                     size="icon"
                     className={`rounded-lg ${
-                      asPath.includes("home") ? "bg-muted" : ""
+                      asPath.includes('home') ? 'bg-muted' : ''
                     }`}
                     aria-label="Playground"
                   >
@@ -52,17 +55,17 @@ const Layout = ({ children }) => {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
-                任务
+                {t('tasks')}
               </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Link href="/modelsControl">
+                <Link href={`/${locale}/modelsControl`}>
                   <Button
                     variant="ghost"
                     size="icon"
                     className={`rounded-lg ${
-                      asPath.includes("modelsControl") ? "bg-muted" : ""
+                      asPath.includes('modelsControl') ? 'bg-muted' : ''
                     }`}
                     aria-label="Models"
                   >
@@ -71,24 +74,47 @@ const Layout = ({ children }) => {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={5}>
-                模型管理
+                {t('modelManagement')}
               </TooltipContent>
             </Tooltip>
-            {/*<Tooltip>*/}
-            {/*  <TooltipTrigger asChild>*/}
-            {/*    <Button*/}
-            {/*      variant="ghost"*/}
-            {/*      size="icon"*/}
-            {/*      className="rounded-lg"*/}
-            {/*      aria-label="Settings"*/}
-            {/*    >*/}
-            {/*      <Settings2Icon className="size-5" />*/}
-            {/*    </Button>*/}
-            {/*  </TooltipTrigger>*/}
-            {/*  <TooltipContent side="right" sideOffset={5}>*/}
-            {/*    Settings*/}
-            {/*  </TooltipContent>*/}
-            {/*</Tooltip>*/}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/${locale}/translateControl`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-lg ${
+                      asPath.includes('translateControl') ? 'bg-muted' : ''
+                    }`}
+                    aria-label="Translate"
+                  >
+                    <Languages className="size-5" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                {t('translationManagement')}
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href={`/${locale}/settings`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-lg ${
+                      asPath.includes('settings') ? 'bg-muted' : ''
+                    }`}
+                    aria-label="Settings"
+                  >
+                    <Settings className="size-5" />
+                  </Button>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={5}>
+                {t('settings')}
+              </TooltipContent>
+            </Tooltip>
           </TooltipProvider>
         </nav>
         <nav className="mt-auto grid gap-1 p-2">
@@ -97,7 +123,7 @@ const Layout = ({ children }) => {
               <TooltipTrigger asChild className="w-10">
                 <Github
                   onClick={() =>
-                    openUrl("https://github.com/buxuku/video-subtitle-master")
+                    openUrl('https://github.com/buxuku/video-subtitle-master')
                   }
                   className="inline-block cursor-pointer"
                 />
@@ -111,9 +137,9 @@ const Layout = ({ children }) => {
       </aside>
       <div className="flex flex-col">
         <header className="sticky top-0 z-10 flex h-[57px] items-center gap-1 border-b bg-background px-4">
-          <h1 className="text-xl font-semibold">
-            批量为视频生成字幕，并可翻译成其它语言
-          </h1>
+          <h4 className="text-base font-semibold">
+            {t('headerTitle')}
+          </h4>
         </header>
         <main className="">{children}</main>
         <Toaster />

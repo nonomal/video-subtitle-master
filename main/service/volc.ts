@@ -7,7 +7,7 @@ export default async function translate(query, proof) {
   const { apiKey: accessKeyId, apiSecret: secretKey } = proof || {};
   if (!accessKeyId || !secretKey) {
     console.log("请先配置 API KEY 和 API SECRET");
-    throw new Error("请先配置 API KEY 和 API SECRET");
+    throw new Error("missingKeyOrSecret");
   }
   if (!service || !fetchApi) {
     service = new Service({
@@ -30,8 +30,11 @@ export default async function translate(query, proof) {
   };
   try {
     const res = await fetchApi(postBody, {});
+    if (!res?.TranslationList?.[0]?.Translation) {
+      throw new Error(res?.ResponseMetadata?.Error?.Code || '未知错误');
+    }
     return res.TranslationList?.[0]?.Translation;
   } catch (error) {
-    return "error";
+    throw new Error(error?.message || '未知错误');
   }
 }
